@@ -5,21 +5,21 @@
 
 ## Описание
 Данный репозиторий содержит Ansible роли для автоматизированного развертывания мониторинга и логирования вне Kubernetes. Включает:
-- Prometheus (и его экспортеры)
+- Prometheus
 - Node Exporter
 - ElasticSearch + Kibana
-- FluentBit для сбора логов
+- FluentBit 
 
 ## Требования
-- Ubuntu 22.04 LTS / Debian 12
+- Ubuntu 22.04 LTS 
 - Ansible 2.12+
 - Доступ к управляемым серверам по SSH
 
 ## Установка
 1. Клонируйте репозиторий:
    ```sh
-   git clone https://github.com/your-repo/ansible-monitoring.git
-   cd ansible-monitoring
+   git clone https://github.com/iurii-anfinogenov/k8s-monitoring-logging-practicum.git
+   cd k8s-monitoring-logging-practicum
 
 2. Заполните инвентарь inventory.yml:
 ```yaml
@@ -40,7 +40,7 @@ k8s-monitoring-logging-practicum/
 │── roles/
 │   ├── prometheus/
 │   ├── node_exporter/
-│   ├── elasticsearch/
+│   ├── opensearch/
 │   ├── fluentbit/
 │── inventory.yml
 │── site.yml

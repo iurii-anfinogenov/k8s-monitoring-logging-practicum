@@ -26,7 +26,7 @@ fluentbit_config:
     host: "{{ fluentbit_opensearch_host }}"
     port: "{{ fluentbit_opensearch_port }}"
     logstash_format: on
-    logstash_prefix: "fluent-bit"
+    logstash_prefix: "logstash"
     replace_dots: on
 
 # Парсеры (опционально)
