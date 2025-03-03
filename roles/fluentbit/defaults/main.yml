@@ -1,5 +1,41 @@
-fluentbit_version: "2.1.0"
-fluentbit_service: "fluent-bit"
-fluentbit_config_file: "/etc/fluent-bit/fluent-bit.conf"
-elasticsearch_host: "http://localhost:9200"
-elasticsearch_index: "system-logs"
+# Версия Fluent Bit
+fluentbit_version: "2.2.0"
+
+# Архитектура (amd64, arm64 и т.д.)
+fluentbit_arch: "amd64"
+
+# Пользователь и группа для запуска Fluent Bit
+fluentbit_user: "fluentbit"
+fluentbit_group: "fluentbit"
+
+# Конфигурация Fluent Bit
+fluentbit_config:
+  service:
+    flush: 1
+    daemon: off
+    log_level: info
+    parsers_file: /etc/fluent-bit/parsers.conf
+  input:
+    name: tail
+    path: /var/log/*.log
+    tag: app_logs
+    parser: json
+  output:
+    name: opensearch
+    match: "*"
+    host: "{{ fluentbit_opensearch_host }}"
+    port: "{{ fluentbit_opensearch_port }}"
+    logstash_format: on
+    logstash_prefix: "fluent-bit"
+    replace_dots: on
+
+# Парсеры (опционально)
+fluentbit_parsers:
+  - name: json
+    format: json
+    time_key: time
+    time_format: "%Y-%m-%dT%H:%M:%S.%LZ"
+
+# Переменные для OpenSearch
+fluentbit_opensearch_host: "localhost"
+fluentbit_opensearch_port: 9200
