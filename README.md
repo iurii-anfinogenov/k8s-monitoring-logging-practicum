@@ -17,18 +17,19 @@
 
 ## Установка
 1. Клонируйте репозиторий:
-   ```sh
+```sh
    git clone https://github.com/iurii-anfinogenov/k8s-monitoring-logging-practicum.git
    cd k8s-monitoring-logging-practicum
 ```
+
 2. Заполните инвентарь inventory.yml:
 ```yaml
-all:
-  hosts:
-    monitoring:
-      ansible_host: 192.168.1.100
-      ansible_user: ubuntu
-      ansible_ssh_private_key_file: ~/.ssh/id_rsa
+   all:
+     hosts:
+       monitoring:
+         ansible_host: 192.168.1.100
+         ansible_user: ubuntu
+         ansible_ssh_private_key_file: ~/.ssh/id_rsa
 ```
 4. Запустите плейбук:
 ```sh
