@@ -1,0 +1,93 @@
+# roles/opensearch/tasks/main.yml
+
+---
+- name: Установка Docker (если не установлен)
+  ansible.builtin.apt:
+    name: docker.io
+    state: present
+    update_cache: yes
+  become: true
+
+- name: Установка Python-модуля docker (для community.docker)
+  ansible.builtin.pip:
+    name:
+      - docker
+    state: present
+  become: true
+
+- name: Create network (if not exists)
+  community.docker.docker_network:
+    name: "opensearch-net"
+    state: present
+  become: true  
+
+# 1. Удаляем старый контейнер OpenSearch, если есть
+
+- name: Remove old OpenSearch container
+  community.docker.docker_container:
+    name: "{{ opensearch_container_name }}"
+    state: absent
+  become: true
+
+
+# 2. Запускаем новый контейнер OpenSearch
+
+- name: Run OpenSearch container
+  community.docker.docker_container:
+    name: "{{ opensearch_container_name }}"
+    image: "opensearchproject/opensearch:{{ opensearch_version }}"
+    networks:
+      - name: "opensearch-net"
+    state: started
+    recreate: true
+    restart_policy: always
+    pull: yes                   # Принудительно тянем образ
+    ports:
+      - "{{ opensearch_http_port }}:9200"
+    env:
+      # Отключаем security
+      plugins.security.disabled: "{{ opensearch_plugins_security_disabled }}"
+
+      # Режим single-node, чтобы не требовать cluster discovery
+      discovery.type: "single-node"
+      
+      # Если хотите слушать на 0.0.0.0 (в новых версиях OS уже так)
+      network.host: "0.0.0.0"
+
+  become: true
+
+
+# 3. Удаляем старый контейнер OpenSearch Dashboards
+
+- name: Remove old OpenSearch Dashboards container
+  community.docker.docker_container:
+    name: "{{ opensearch_dashboards_container_name }}"
+    state: absent
+  become: true
+
+
+# 4. Запускаем OpenSearch Dashboards
+
+- name: Run OpenSearch Dashboards container
+  community.docker.docker_container:
+    name: "{{ opensearch_dashboards_container_name }}"
+    image: "opensearchproject/opensearch-dashboards:{{ opensearch_dashboards_version }}"
+    networks:
+      - name: "opensearch-net"    
+    state: started
+    recreate: true
+    restart_policy: always
+    pull: yes
+    ports:
+      - "{{ opensearch_dashboards_port }}:5601"
+    env:
+      # Адрес OpenSearch
+      DISABLE_SECURITY_DASHBOARDS_PLUGIN: "true"
+      OPENSEARCH_HOSTS: "http://{{ opensearch_container_name }}:9200"
+
+      # Если security отключена, обычно no credentials needed
+      # При включённой security нужно настраивать user/pass.
+
+      # Если хотим слушать всё:
+      SERVER_HOST: "0.0.0.0"
+  become: true

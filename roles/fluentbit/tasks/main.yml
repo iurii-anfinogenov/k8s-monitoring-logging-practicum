@@ -1,22 +1,84 @@
----
-- name: Установка Docker (если не установлен)
-  ansible.builtin.apt:
-    name: docker.io
+- name: Установка зависимостей
+  apt:
+    name:
+      - curl
+      - gnupg
     state: present
     update_cache: yes
-  become: true
+  when: ansible_os_family == "Debian"
 
-- name: Запуск контейнера FluentBit
-  community.docker.docker_container:
-    name: fluentbit
-    image: fluent/fluent-bit:2.1.0
+- name: Скачивание и добавление GPG-ключа Fluent Bit
+  shell: |
+    curl https://packages.fluentbit.io/fluentbit.key | gpg --dearmor > /usr/share/keyrings/fluentbit-keyring.gpg
+  args:
+    creates: /usr/share/keyrings/fluentbit-keyring.gpg
+  become: yes
+
+- name: Добавление репозитория Fluent Bit
+  copy:
+    dest: /etc/apt/sources.list.d/fluent-bit.list
+    content: |
+      deb [signed-by=/usr/share/keyrings/fluentbit-keyring.gpg] https://packages.fluentbit.io/ubuntu/jammy jammy main
+    mode: '0644'
+  become: yes
+
+- name: Обновление кэша пакетов
+  apt:
+    update_cache: yes
+  become: yes
+
+- name: Установка Fluent Bit
+  apt:
+    name: fluent-bit
+    state: present
+  become: yes
+
+- name: Создание группы Fluent Bit
+  group:
+    name: "{{ fluentbit_group }}"
+    state: present
+  become: yes
+
+- name: Создание пользователя и группы Fluent Bit
+  user:
+    name: "{{ fluentbit_user }}"
+    group: "{{ fluentbit_group }}"
+    system: yes
+    create_home: no
+  become: yes
+
+- name: Создание директории для конфигурации
+  file:
+    path: /etc/fluent-bit
+    state: directory
+    owner: "{{ fluentbit_user }}"
+    group: "{{ fluentbit_group }}"
+    mode: '0755'
+  become: yes
+
+- name: Настройка основного конфигурационного файла
+  template:
+    src: fluent-bit.conf.j2
+    dest: /etc/fluent-bit/fluent-bit.conf
+    owner: "{{ fluentbit_user }}"
+    group: "{{ fluentbit_group }}"
+    mode: '0644'
+  notify: Restart Fluent Bit
+  become: yes
+
+- name: Настройка файла парсеров
+  template:
+    src: parsers.conf.j2
+    dest: /etc/fluent-bit/parsers.conf
+    owner: "{{ fluentbit_user }}"
+    group: "{{ fluentbit_group }}"
+    mode: '0644'
+  notify: Restart Fluent Bit
+  become: yes
+
+- name: Включение и запуск Fluent Bit
+  service:
+    name: fluent-bit
     state: started
-    restart_policy: always
-    volumes:
-      - "/var/log:/var/log"
-      - "/etc/machine-id:/etc/machine-id"
-    ports:
-      - "24224:24224"
-    env:
-      FLUENT_ELASTICSEARCH_HOST: "elasticsearch"
-      FLUENT_ELASTICSEARCH_PORT: "9200"
+    enabled: yes
+  become: yes

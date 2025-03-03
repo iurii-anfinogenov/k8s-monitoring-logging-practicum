@@ -53,18 +53,6 @@ k8s-monitoring-logging-practicum/
 - fluentbit: настройка FluentBit для сбора логов в ElasticSearch  
 
 
-
-
-### Настройки авторизации
-> С версии 8.x Elastic усилил безопасность, добавив: 
-Enrollment Token – для привязки Kibana к защищённому Elasticsearch.
-Verification Code – чтобы гарантировать, что человек, имеющий токен, действительно управляет узлом Kibana.
-```
-docker exec -it elasticsearch bin/elasticsearch-create-enrollment-token --scope kibana # получить токен
-docker exec -it kibana bin/kibana-verification-code # код авторизации
-```
-
-
 ### Использование ssh-agent (если стоит пароль на ssh_key)
 Чтобы избежать постоянного ввода пароля, можно добавить ключ в ssh-agent:
 

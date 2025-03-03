@@ -1,0 +1,21 @@
+# roles/opensearch/defaults/main.yml
+
+# Версии Docker-образов
+opensearch_version: "2.9.0"
+opensearch_dashboards_version: "2.9.0"
+
+# Имена контейнеров
+opensearch_container_name: "opensearch"
+opensearch_dashboards_container_name: "opensearch-dashboards"
+
+# Порты, пробрасываемые наружу
+opensearch_http_port: 9200
+opensearch_dashboards_port: 5601
+
+# По умолчанию отключаем встроенную security, 
+# чтобы не требовать авторизации или сертификатов
+opensearch_plugins_security_disabled: "true"
+
+# Дополнительные переменные при необходимости
+# opensearch_data_path: "/var/lib/opensearch/data"
+# (Если хотите монтировать volume для хранения данных)

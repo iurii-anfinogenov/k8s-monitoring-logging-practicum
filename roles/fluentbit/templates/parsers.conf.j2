@@ -1,0 +1,7 @@
+{% for item in fluentbit_parsers %}
+[PARSER]
+    Name        {{ item.name }}
+    Format      {{ item.format }}
+    Time_Key    {{ item.time_key }}
+    Time_Format {{ item.time_format }}
+{% endfor %}
