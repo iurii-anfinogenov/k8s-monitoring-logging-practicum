@@ -1,0 +1,17 @@
+# roles/elasticsearch/defaults/main.yml
+
+# Версии Docker-образов
+elasticsearch_version: "8.5.0"
+kibana_version: "8.5.0"
+
+# Имена контейнеров
+elasticsearch_container_name: "elasticsearch"
+kibana_container_name: "kibana"
+
+# Порты
+elasticsearch_http_port: 9200
+kibana_http_port: 5601
+
+# Нужно ли отключить безопасность (без паролей и токенов)?
+xpack_security_enabled: false
+xpack_security_enrollment_enabled: false

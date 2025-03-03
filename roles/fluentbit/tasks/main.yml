@@ -1,0 +1,22 @@
+---
+- name: Установка Docker (если не установлен)
+  ansible.builtin.apt:
+    name: docker.io
+    state: present
+    update_cache: yes
+  become: true
+
+- name: Запуск контейнера FluentBit
+  community.docker.docker_container:
+    name: fluentbit
+    image: fluent/fluent-bit:2.1.0
+    state: started
+    restart_policy: always
+    volumes:
+      - "/var/log:/var/log"
+      - "/etc/machine-id:/etc/machine-id"
+    ports:
+      - "24224:24224"
+    env:
+      FLUENT_ELASTICSEARCH_HOST: "elasticsearch"
+      FLUENT_ELASTICSEARCH_PORT: "9200"

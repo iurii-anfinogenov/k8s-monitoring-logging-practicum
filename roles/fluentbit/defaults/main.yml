@@ -1,0 +1,5 @@
+fluentbit_version: "2.1.0"
+fluentbit_service: "fluent-bit"
+fluentbit_config_file: "/etc/fluent-bit/fluent-bit.conf"
+elasticsearch_host: "http://localhost:9200"
+elasticsearch_index: "system-logs"

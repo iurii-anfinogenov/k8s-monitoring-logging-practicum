@@ -1,0 +1,17 @@
+[SERVICE]
+    Flush         5
+    Log_Level     info
+
+[INPUT]
+    Name          systemd
+    Tag           host.*
+    DB            /var/log/flb_journal.db
+    Systemd_Filter  _SYSTEMD_UNIT=sshd.service
+
+[OUTPUT]
+    Name          es
+    Match         host.*
+    Host          {{ elasticsearch_host }}
+    Port          9200
+    Index        {{ elasticsearch_index }}
+    Type          _doc

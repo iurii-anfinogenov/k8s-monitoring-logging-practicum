@@ -1,0 +1,8 @@
+prometheus_version: "2.45.0"
+prometheus_user: "prometheus"
+prometheus_group: "prometheus"
+prometheus_home: "/etc/prometheus"
+prometheus_data_dir: "/var/lib/prometheus"
+prometheus_config_file: "/etc/prometheus/prometheus.yml"
+prometheus_bin_dir: "/usr/local/bin"
+prometheus_web_port: 9090

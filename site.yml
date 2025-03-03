@@ -1,0 +1,19 @@
+---
+- name: Разворачивание Prometheus и стека логирования EFK
+  hosts: all
+  become: true
+  vars:
+    elasticsearch_version: "8.4.3"
+    kibana_version: "8.4.3"
+    prometheus_version: "2.45.0"
+    node_exporter_version: "1.6.0"
+    fluentbit_version: "2.1.0"
+  roles:
+    - role: prometheus
+      tags: ["prometheus"]
+    - role: node_exporter
+      tags: ["node_exporter"]
+    - role: elasticsearch
+      tags: ["elasticsearch", "kibana"]
+    - role: fluentbit
+      tags: ["fluentbit"]
